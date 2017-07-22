@@ -166,6 +166,23 @@ public class Deque<Item> implements Iterable<Item> {
         System.out.println(Integer.toString(i) +": " + dq.removeLast());
         
     }
+    
+    
+            
+    dq.addFirst("1");
+    dq.addFirst("2");    
+    dq.addFirst("3n");    
+    dq.addFirst("4");    
+    dq.addFirst("5a");  
+    dq.addLast("a");
+    dq.addLast("b");    
+    dq.addLast("c");    
+    dq.addLast("d");    
+    dq.addLast("e1");    
+    
+       for (String s : dq) {
+           System.out.println(s);
+       }
 
    }  // unit testing (optional)
 
