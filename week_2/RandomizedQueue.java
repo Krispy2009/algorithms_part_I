@@ -4,76 +4,85 @@ import java.util.NoSuchElementException;
 import edu.princeton.cs.algs4.StdRandom;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
-    
  
     private Item[] items;
     private int size;
     
-    public RandomizedQueue(int sz)  {
+    public RandomizedQueue()  {
 
-        items = createNewArray(sz);
-        
-    }               // construct an empty randomized queue
-    public boolean isEmpty()  {return size() == 0;}               // is the queue empty?
-    
-    public int size() { return size; }                       // return the number of items on the queue
+        items = createNewArray(16);
+
+    }
+
+    private RandomizedQueue(RandomizedQueue<Item> other) {
+
+        this.items = other.items;
+        this.size = other.size;
+    }
+
+    public boolean isEmpty()  {
+        return size() == 0;
+    }
+
+    public int size() {
+        return size;
+    }
     
     public void enqueue(Item item) {
-        System.out.println("Current size: " + Integer.toString(size));
         // Check if we need to resize
-        if(items.length == size) {
+        if (items.length == size) {
             int newSize = size * 2;
             Item [] newArray = createNewArray(newSize);
-            
+
             int i = 0;
-            for(Item it: items) {
+            for (Item it: items) {
                 newArray[i] = it;
                 i++;
             }
-            
+
             items = newArray;
-            
         }
         
         items[size] = item;
         size += 1;
- 
-    }          // add the item
+    }
     
     public Item dequeue() {
         
-        if(isEmpty()) {
-           throw new NoSuchElementException();
+        if (isEmpty()) {
+            throw new NoSuchElementException();
         }
-        
-        //Check if we need to resize
-        if(items.length == size*4){
+
+        // Check if we need to resize
+        if (items.length == size*4) {
         
             int newSize = items.length/2;
             Item[] newArray = createNewArray(newSize);
-            
-            for (int i=0; i< size; i++) {
-                if(items[i] != null) {
-                    newArray[i] = items[i];
+            int currIdx = 0;
+            for (int i = 0; i < newSize*2; i++) {
+                if (items[i] != null) {
+                    newArray[currIdx] = items[i];
+                    currIdx++;
                 }
             }
+
             items = newArray;
-            
+
         }
-        
+
         int idx = pickRandom();
         Item randomItem = items[idx];
-        
+
         items[idx] = null;
-        
+
         size -= 1;
-        
+
         return randomItem;
-    }                   
-    
+    }
+
     public Item sample()   {
         
-        if(isEmpty()) {
+        if (isEmpty()) {
             throw new NoSuchElementException();
         }
          
@@ -88,12 +97,12 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int idx = StdRandom.uniform(items.length);
         Item randomItem = items[idx];
         
-         while(randomItem == null){
+        while (randomItem == null) {
             idx = StdRandom.uniform(items.length);
             randomItem = items[idx];
         }
          
-        return idx;       
+        return idx;
     }
     
     public Iterator<Item> iterator() { 
@@ -108,7 +117,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     public static void main(String[] args) {
     
     
-        RandomizedQueue<Integer> r = new RandomizedQueue<Integer>(32);
+        RandomizedQueue<Integer> r = new RandomizedQueue<Integer>();
     
         System.out.println(r.size());
         r.enqueue(1);
@@ -118,51 +127,47 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         r.enqueue(5);
         r.enqueue(6);
         r.enqueue(7);
+        // for (int i=8; i < 100; i++){ r.enqueue(i); }
         
         System.out.println(r.size());
         System.out.println(r.dequeue());
         System.out.println(r.size());
         
-        System.out.println("========");        
+        System.out.println("========");
         
-        for(int i : r) {
+        for (int i : r) {
             System.out.println(i);
         }
     
-    }   // unit testing (optional)
+    }
 
     
-   private class QueueIterator<Item> implements Iterator<Item>{
-       
-       private final RandomizedQueue<Item> newQueue;
+    private class QueueIterator<Item> implements Iterator<Item> {
 
-       public QueueIterator(final RandomizedQueue<Item> queue) {
-           newQueue = new RandomizedQueue<Item>(queue.items.length);
-           
-           System.out.println(queue.items.length);
-           System.out.println(newQueue.items.length);
-           
-           System.arraycopy(queue.items, 0, newQueue.items, 0, queue.items.length);
-           
-           StdRandom.shuffle(newQueue.items);
-           
-           for (int i=0; i < newQueue.items.length; i++) {System.out.println(newQueue.items[i]);}
+        private final RandomizedQueue<Item> newQueue;
 
-       }
+        public QueueIterator(final RandomizedQueue<Item> queue) {
+
+            newQueue = new RandomizedQueue<Item>(queue);
+            // System.arraycopy(queue.items, 0, newQueue.items, 0, queue.items.length);
+            StdRandom.shuffle(newQueue.items);
+        }
  
-       public boolean hasNext() {
-           return !newQueue.isEmpty();
-       }
+        public boolean hasNext() {
+            return !newQueue.isEmpty();
+        }
 
-       public Item next() {
-           if (!hasNext()) {
-               throw new NoSuchElementException();
-           }
-           return newQueue.dequeue();
-       }
+        public Item next() {
 
-       public void remove() {
-           throw new UnsupportedOperationException();
-       }
-   }
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+
+            return newQueue.dequeue();
+        }
+
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
 }
