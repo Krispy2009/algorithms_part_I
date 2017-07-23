@@ -10,7 +10,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     
     public RandomizedQueue()  {
 
-        items = createNewArray(16);
+        items = createNewArray(2);
 
     }
 
@@ -33,7 +33,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         if (items.length == size) {
             int newSize = size * 2;
             Item [] newArray = createNewArray(newSize);
-
             int i = 0;
             for (Item it: items) {
                 newArray[i] = it;
@@ -55,8 +54,9 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 
         // Check if we need to resize
         if (items.length == size*4) {
-        
+
             int newSize = items.length/2;
+
             Item[] newArray = createNewArray(newSize);
             int currIdx = 0;
             for (int i = 0; i < newSize*2; i++) {
@@ -73,9 +73,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         int idx = pickRandom();
         Item randomItem = items[idx];
 
-        items[idx] = null;
-
-        size -= 1;
+        items[idx] = items[--size];
+        items[size] = null;
 
         return randomItem;
     }
@@ -94,15 +93,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     }
     
     private int pickRandom() {
-        int idx = StdRandom.uniform(items.length);
-        Item randomItem = items[idx];
-        
-        while (randomItem == null) {
-            idx = StdRandom.uniform(items.length);
-            randomItem = items[idx];
-        }
-         
-        return idx;
+        return StdRandom.uniform(size);
     }
     
     public Iterator<Item> iterator() { 
@@ -116,7 +107,6 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
     
     public static void main(String[] args) {
     
-    
         RandomizedQueue<Integer> r = new RandomizedQueue<Integer>();
     
         System.out.println(r.size());
@@ -127,18 +117,24 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         r.enqueue(5);
         r.enqueue(6);
         r.enqueue(7);
+        r.enqueue(8);
+        r.enqueue(9);
+        r.enqueue(10);
+        r.enqueue(11);
+        r.enqueue(12);
+        r.enqueue(13);
+        r.enqueue(14);
         // for (int i=8; i < 100; i++){ r.enqueue(i); }
         
         System.out.println(r.size());
-        System.out.println(r.dequeue());
-        System.out.println(r.size());
-        
         System.out.println("========");
         
         for (int i : r) {
+            System.out.print("==> ");
             System.out.println(i);
         }
-    
+        System.out.println("========");
+        System.out.println(r.size());
     }
 
     
@@ -149,8 +145,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
         public QueueIterator(final RandomizedQueue<Item> queue) {
 
             newQueue = new RandomizedQueue<Item>(queue);
-            // System.arraycopy(queue.items, 0, newQueue.items, 0, queue.items.length);
-            StdRandom.shuffle(newQueue.items);
+            StdRandom.shuffle(newQueue.items, 0, newQueue.size());
         }
  
         public boolean hasNext() {
